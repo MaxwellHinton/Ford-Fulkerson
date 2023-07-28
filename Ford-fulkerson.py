@@ -7,6 +7,7 @@ class Node:
     def __init__(self, ID):
         self.ID = ID
         self.connections = {}
+        self.connections_total = 0
         self.visited = False
         self.parents = []
     
@@ -16,6 +17,7 @@ class Node:
             'capacity': capacity,
             'flow': 0
         }
+        self.connections_total += 1
 
     def add_parent(self, parent):
         self.parents.append(parent)
@@ -33,11 +35,9 @@ def generate_network(n):
     for i in range(1, n + 1):
         nodes[i] = Node(i)
     
-    
-    
     for node in nodes:
         #(n//2) ensuring integer division
-        num_connections = random.randint(1, (n//2) + 1) 
+        num_connections = random.randint(1,(n//2) )
         
         available_nodes = dict(nodes)
 
@@ -46,31 +46,42 @@ def generate_network(n):
 
         for _ in range(num_connections): 
 
-            to_add = random.choice(list(available_nodes.keys()))
+            key_picked = random.choice(list(available_nodes.keys()))
+
+            to_Add= nodes[key_picked]
 
             #Generating random capcity thats no more than 5
             capacity = random.randint(1, 6)
 
-            nodes[node].add_connection(to_add, capacity)
+            nodes[node].add_connection(to_Add, capacity)
             
             #Now we set the parent of toAdd to indicate the direction of flow.
-            nodes[to_add].add_parent(node)
+            nodes[key_picked].add_parent(node)
 
-            del available_nodes[to_add]
+            del available_nodes[key_picked]
         
     return nodes
 
 
+
+#Main code
+
+random.seed(40)
 nodes = generate_network(6)
 
+print("\n")
+
+
 for node_id, node in nodes.items():
-        print(f"Node {node_id}:")
+        print(f"Node {node.ID}")
         
-        for edges, edge_data in node.connections.items():
+        for node_id, edge_data in node.connections.items():
 
             capacity = edge_data['capacity']
             flow = edge_data['flow']
-            print(f"\tConnected to Node {edges}, Capacity: {capacity}, Flow: {flow}")
+            print(f"\tConnected to Node {node_id.ID}, Capacity: {capacity}, Flow: {flow}")
+
+        print("Parents: ",node.parents)
 
 
 
